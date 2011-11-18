@@ -1,3 +1,4 @@
+with Ada.Characters.Handling;
 with Ada.Directories;
 with Ada.Exceptions;
 with Ada.Text_IO;
@@ -27,7 +28,14 @@ package body Alix.Installer is
      (Project_Name      : String;
       Project_File_Path : String;
       Source_Directory  : String;
+      Build_Base        : String;
       Project_Config    : Tropos.Configuration);
+   --  Create a project file Project_Name in the directory given
+   --  by Project_File_Path.  Source_Directory is the base for
+   --  source paths given by the Project_Config configuration
+   --  settings.  The build objects will be placed into
+   --  Build_Base/obj, and any binaries into Build_Base/bin.
+   --  Both are created if necessary
 
    procedure Build_Project (GPR_Project_Path : String);
 
@@ -87,6 +95,28 @@ package body Alix.Installer is
       Config.Iterate ("depend", Check_Dependency'Access);
    end Check_Dependencies;
 
+   ---------------
+   -- Configure --
+   ---------------
+
+   procedure  Configure (Directory : String) is
+         Config           : constant Tropos.Configuration :=
+                           Read_Alix_File (Directory);
+   begin
+      Ada.Text_IO.Put_Line ("Found alix file: " & Config.Config_Name);
+      Check_Dependencies (Config);
+      Write_Project_File (Project_Name      => Config.Get ("project_name"),
+                          Project_File_Path =>
+                            Ada.Directories.Compose
+                              (Directory,
+                               Ada.Characters.Handling.To_Lower
+                                 (Config.Get ("project_name"))
+                                 & ".gpr"),
+                          Source_Directory  => ".",
+                          Project_Config    => Config,
+                          Build_Base        => "build");
+   end Configure;
+
    -------------
    -- Install --
    -------------
@@ -114,10 +144,12 @@ package body Alix.Installer is
 
          Check_Dependencies (Config);
 
-         Write_Project_File (Project_Name      => Project_Name,
-                             Project_File_Path => GPR_Project_Path,
-                             Source_Directory  => Source_Directory,
-                             Project_Config    => Config);
+         Write_Project_File
+           (Project_Name      => Project_Name,
+            Project_File_Path => GPR_Project_Path,
+            Source_Directory  => Source_Directory,
+            Project_Config    => Config,
+            Build_Base        => Alix.Config.Global_Build_Path);
 
          if Config.Contains ("path_unit") then
             declare
@@ -327,6 +359,7 @@ package body Alix.Installer is
      (Project_Name      : String;
       Project_File_Path : String;
       Source_Directory  : String;
+      Build_Base        : String;
       Project_Config    : Tropos.Configuration)
    is
       use Ada.Text_IO;
@@ -399,6 +432,17 @@ package body Alix.Installer is
       end Write_Single_Line_List;
 
    begin
+
+      if Project_Config.Contains ("main_unit") then
+         Ada.Directories.Create_Path
+           (Alix.Directories.Compose_Directories
+              (Build_Base, "bin"));
+      end if;
+
+      Ada.Directories.Create_Path
+        (Alix.Directories.Compose_Directories
+           (Build_Base, "obj"));
+
       Create (File, Out_File, Project_File_Path);
 
       Project_Config.Iterate ("depend", Write_Project_With'Access);
@@ -415,13 +459,13 @@ package body Alix.Installer is
 
       Put_Line (File,
                 "   for Object_Dir use """
-                & Alix.Config.Global_Object_Path
+                & Ada.Directories.Compose (Build_Base, "obj")
                 & """;");
 
       if Project_Config.Contains ("main_unit") then
          Put_Line (File,
                    "   for Exec_Dir use """
-                   & Alix.Config.Global_Exec_Path
+                   & Ada.Directories.Compose (Build_Base, "bin")
                    & """;");
          Put_Line (File,
                    "   for Main use (");
