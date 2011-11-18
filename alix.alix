@@ -1,0 +1,15 @@
+project_name = Alix
+source_dir = src
+depend = { project = WLib version = any }
+depend = { project = Tropos version = any }
+main_unit = alix-driver
+exec_name = alix
+config_dir = config
+path_unit = { unit = Alix.Paths path = src/alix-paths.ads }
+builder_option = "-g"
+builder_option = "-k"
+compiler_option = "-g"
+compiler_option = "-gnatwa"
+compiler_option = "-gnatyabcefhiklmnoprst"
+compiler_option = "-gnat2012"
+linker_option = "-g"
