@@ -227,7 +227,7 @@ package body Alix.Installer is
       if not Alix.Commands.Skip_Source_Clone then
 
          if Ada.Directories.Exists (Version_Path) then
-            Ada.Directories.Delete_Directory (Version_Path);
+            return Version_Path;
          end if;
 
          Ada.Directories.Set_Directory (Project_Path);
