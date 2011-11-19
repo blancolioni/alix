@@ -189,15 +189,20 @@ package body Alix.Installer is
          if Config.Contains ("main_unit") then
             Ada.Text_IO.Put_Line ("Installing executable");
             declare
+               Exec_Ext   : constant String :=
+                              Alix.Config.Get ("executable_extension");
+               Build_Name : constant String :=
+                              Config.Get ("main_unit")
+                              & Exec_Ext;
                Exec_Name : constant String :=
                              (if Config.Contains ("exec_name")
                               then Config.Get ("exec_name")
-                              else Config.Get ("main_unit"));
+                              else Config.Get ("main_unit"))
+                 & Exec_Ext;
             begin
                Ada.Directories.Copy_File
                  (Ada.Directories.Compose
-                    (Alix.Config.Global_Exec_Path,
-                     Config.Get ("main_unit")),
+                    (Alix.Config.Global_Exec_Path, Build_Name),
                   Ada.Directories.Compose
                     (Alix.Config.Get ("exec_path"),
                      Exec_Name));

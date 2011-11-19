@@ -36,7 +36,7 @@ package body Alix.Config is
 
    function Get (Key : String) return String is
    begin
-      return Local_Config.Get (Key);
+      return Local_Config.Get (Key, "");
    end Get;
 
    -----------------------
