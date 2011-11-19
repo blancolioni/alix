@@ -1,8 +1,6 @@
 with Ada.Directories;
 with Ada.Strings.Unbounded;
 
-with GNAT.OS_Lib;
-
 package body Alix.Directories is
 
    -------------------------
@@ -20,7 +18,9 @@ package body Alix.Directories is
       end if;
 
       for I in Sub_Directory'Range loop
-         if Sub_Directory (I) = GNAT.OS_Lib.Directory_Separator then
+         if Sub_Directory (I) = '/'
+           or else Sub_Directory (I) = '\'
+         then
             return Compose_Directories
               (Ada.Directories.Compose
                  (Containing_Directory,
