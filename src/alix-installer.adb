@@ -37,6 +37,19 @@ package body Alix.Installer is
    --  Build_Base/obj, and any binaries into Build_Base/bin.
    --  Both are created if necessary
 
+   procedure Write_Config_Path_Unit
+     (Project_Name     : String;
+      Project_Version  : String;
+      Source_Directory : String;
+      Config           : Tropos.Configuration);
+   --  If Config contains a config path element, write a corresponding
+   --  unit which names the config path defined by
+   --  Alix.Config.Project_Config_Path
+   --
+   --     package {Unit_Name} is
+   --        Config_Path : constant String := "{Config_Path}";
+   --     end {Unit_Name};
+
    procedure Build_Project (GPR_Project_Path : String);
    --  Launch gnatmake to build the project found at GPR_Project_Path
 
@@ -55,6 +68,10 @@ package body Alix.Installer is
       Ada.Text_IO.Put_Line ("Building: " & GPR_Project_Path);
       Spawn (Alix.Config.Get ("gnatmake") & " -P " & GPR_Project_Path);
    end Build_Project;
+
+   ------------------------
+   -- Check_Dependencies --
+   ------------------------
 
    procedure Check_Dependencies (Config : Tropos.Configuration) is
 
@@ -110,21 +127,30 @@ package body Alix.Installer is
    ---------------
 
    procedure  Configure (Directory : String) is
-         Config           : constant Tropos.Configuration :=
-                           Read_Alix_File (Directory);
+      Config           : constant Tropos.Configuration :=
+        Read_Alix_File (Directory);
+
+      Project_Name     : constant String :=
+        Config.Get ("project_name");
+      Project_File_Name : constant String :=
+        Ada.Characters.Handling.To_Lower (Project_Name) & ".gpr";
+      Project_File_Path : constant String :=
+        Ada.Directories.Compose
+        (Directory, Project_File_Name);
    begin
       Ada.Text_IO.Put_Line ("Found alix file: " & Config.Config_Name);
+
       Check_Dependencies (Config);
-      Write_Project_File (Project_Name      => Config.Get ("project_name"),
-                          Project_File_Path =>
-                            Ada.Directories.Compose
-                              (Directory,
-                               Ada.Characters.Handling.To_Lower
-                                 (Config.Get ("project_name"))
-                                 & ".gpr"),
-                          Source_Directory  => ".",
-                          Project_Config    => Config,
-                          Build_Base        => "build");
+
+      Write_Config_Path_Unit
+        (Project_Name, "", Directory, Config);
+
+      Write_Project_File
+        (Project_Name      => Config.Get ("project_name"),
+         Project_File_Path => Project_File_Path,
+         Source_Directory  => ".",
+         Project_Config    => Config,
+         Build_Base        => "build");
    end Configure;
 
    -------------
@@ -154,45 +180,15 @@ package body Alix.Installer is
 
          Check_Dependencies (Config);
 
+         Write_Config_Path_Unit (Project_Name, Project_Version,
+                                 Source_Directory, Config);
+
          Write_Project_File
            (Project_Name      => Project_Name,
             Project_File_Path => GPR_Project_Path,
             Source_Directory  => Source_Directory,
             Project_Config    => Config,
             Build_Base        => Alix.Config.Global_Build_Path);
-
-         if Config.Contains ("path_unit") then
-            declare
-               use Ada.Text_IO;
-               File : File_Type;
-               Path_Unit_Config : constant Tropos.Configuration :=
-                                    Config.Child ("path_unit");
-               Config_Path      : constant String :=
-                                    Alix.Config.Project_Config_Path
-                                      (Project_Name,
-                                       Project_Version);
-            begin
-               Create
-                 (File, Out_File,
-                  Alix.Directories.Compose_Directories
-                    (Source_Directory,
-                     Path_Unit_Config.Get ("path")));
-
-               Put_Line (File,
-                         "package " & Path_Unit_Config.Get ("unit")
-                         & " is");
-               New_Line (File);
-               Put_Line (File, "   Config_Path : constant String :=");
-               Put_Line (File,
-                         "     """ & Config_Path & """;");
-               New_Line (File);
-               Put_Line (File,
-                         "end " & Path_Unit_Config.Get ("unit")
-                         & ";");
-               Close (File);
-            end;
-         end if;
-
 
          Build_Project (GPR_Project_Path);
 
@@ -365,6 +361,53 @@ package body Alix.Installer is
       end if;
 
    end Spawn;
+
+   ----------------------------
+   -- Write_Config_Path_Unit --
+   ----------------------------
+
+   procedure Write_Config_Path_Unit
+     (Project_Name     : String;
+      Project_Version  : String;
+      Source_Directory : String;
+      Config           : Tropos.Configuration)
+   is
+   begin
+      if Config.Contains ("path_unit") then
+         declare
+            use Ada.Text_IO;
+            File : File_Type;
+            Path_Unit_Config : constant Tropos.Configuration :=
+              Config.Child ("path_unit");
+            Config_Path      : constant String :=
+              (if Project_Version = ""
+                 then Ada.Directories.Compose (Source_Directory,
+                                               Config.Get ("config_dir"))
+                 else Alix.Config.Project_Config_Path
+                   (Project_Name,
+                    Project_Version));
+         begin
+            Create
+              (File, Out_File,
+               Alix.Directories.Compose_Directories
+                 (Source_Directory,
+                  Path_Unit_Config.Get ("path")));
+
+            Put_Line (File,
+                      "package " & Path_Unit_Config.Get ("unit")
+                        & " is");
+            New_Line (File);
+            Put_Line (File, "   Config_Path : constant String :=");
+            Put_Line (File,
+                      "     """ & Config_Path & """;");
+            New_Line (File);
+            Put_Line (File,
+                      "end " & Path_Unit_Config.Get ("unit")
+                        & ";");
+            Close (File);
+         end;
+      end if;
+   end Write_Config_Path_Unit;
 
    ------------------------
    -- Write_Project_File --
