@@ -38,6 +38,7 @@ package body Alix.Installer is
    --  Both are created if necessary
 
    procedure Build_Project (GPR_Project_Path : String);
+   --  Launch gnatmake to build the project found at GPR_Project_Path
 
    procedure Check_Dependencies (Config : Tropos.Configuration);
    --  Check the alix config file for projects we depend on.  If any
@@ -66,27 +67,36 @@ package body Alix.Installer is
       procedure Check_Dependency (It : Tropos.Cursor) is
          Dep_Config  : constant Tropos.Configuration :=
                          Tropos.Element (It);
-         Project_Dep : constant String :=
+         Project_Dep  : constant String :=
                          Dep_Config.Get ("project");
-         Version_Dep : constant String :=
-                         Dep_Config.Get ("version");
+         Version_Dep  : constant String :=
+           Dep_Config.Get ("version", "");
+         External_Dep : constant Boolean := Dep_Config.Get ("external");
       begin
-         Ada.Text_IO.Put_Line ("dependency: "
-                               & Project_Dep & "-" & Version_Dep);
-         if not Alix.Status.Is_Installed (Project_Dep, Version_Dep) then
-            declare
-               Project_Version : constant Alix.Versions.Version_Number :=
-                                   Alix.Status.Get_Matching_Version
-                                     (Project_Dep, Version_Dep);
-            begin
-               if Project_Version /= "" then
-                  Install (Project_Dep, Project_Version);
-               else
-                  raise Constraint_Error with
-                    "Cannot find package "
-                      & Project_Dep & "-" & Project_Version;
-               end if;
-            end;
+
+         if External_Dep then
+            Ada.Text_IO.Put_Line ("external dependency: "
+                                    & Project_Dep);
+         else
+
+            Ada.Text_IO.Put_Line ("dependency: "
+                                    & Project_Dep & "-" & Version_Dep);
+
+            if not Alix.Status.Is_Installed (Project_Dep, Version_Dep) then
+               declare
+                  Project_Version : constant Alix.Versions.Version_Number :=
+                    Alix.Status.Get_Matching_Version
+                    (Project_Dep, Version_Dep);
+               begin
+                  if Project_Version /= "" then
+                     Install (Project_Dep, Project_Version);
+                  else
+                     raise Constraint_Error with
+                       "Cannot find package "
+                       & Project_Dep & "-" & Project_Version;
+                  end if;
+               end;
+            end if;
          end if;
 
       end Check_Dependency;
@@ -412,13 +422,22 @@ package body Alix.Installer is
          Project_Dep   : constant String :=
                            Depend_Config.Get ("project");
          Version_Dep   : constant String :=
-                           Depend_Config.Get ("version");
+                           Depend_Config.Get ("version", "");
+         External_Dep : constant Boolean :=
+           Depend_Config.Get ("external");
       begin
-         Put_Line (File,
-                   "with """
-                   & Alix.Status.Get_GPR_Project_Name
-                     (Project_Dep, Version_Dep)
-                   & """;");
+         if External_Dep then
+            Put_Line (File,
+                      "with """
+                        & Ada.Characters.Handling.To_Lower (Project_Dep)
+                        & """;");
+         else
+            Put_Line (File,
+                      "with """
+                        & Alix.Status.Get_GPR_Project_Name
+                        (Project_Dep, Version_Dep)
+                        & """;");
+         end if;
       end Write_Project_With;
 
       ----------------------------
