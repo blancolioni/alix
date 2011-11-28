@@ -1,6 +1,6 @@
 package Alix.Paths is
 
    Config_Path : constant String :=
-     "/home/fraser/alix/config/Alix/Trunk";
+     "/home/fraser/kiln/alix-trunk/config";
 
 end Alix.Paths;

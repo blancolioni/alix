@@ -1,3 +1,7 @@
 WLib = { Trunk }
 Marlowe = { Trunk }
 Tropos = { Trunk }
+GCS = { Trunk }
+Memor = { Trunk }
+SourceGen = { Trunk }
+SK = { Trunk }
