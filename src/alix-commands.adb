@@ -4,6 +4,7 @@ with Alix.Commands.Help;
 
 with Alix.Commands.Configure;
 with Alix.Commands.Install;
+with Alix.Commands.Update;
 
 package body Alix.Commands is
 
@@ -61,6 +62,8 @@ package body Alix.Commands is
         ("install", Alix.Commands.Install.Install_Handler);
       WL.Command_Line.Register
         ("configure", Alix.Commands.Configure.Configure_Handler);
+      WL.Command_Line.Register
+        ("update", Alix.Commands.Update.Update_Handler);
 
       WL.Command_Line.Register
         ("no-clone",

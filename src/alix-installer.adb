@@ -9,12 +9,11 @@ with Tropos.Reader;
 with Alix.Commands;
 with Alix.Config;
 with Alix.Directories;
+with Alix.Processes;
 with Alix.Status;
 with Alix.Versions;
 
 package body Alix.Installer is
-
-   procedure Spawn (Command : String);
 
    function Pull_Source
      (Project_Name    : String;
@@ -66,7 +65,8 @@ package body Alix.Installer is
    procedure Build_Project (GPR_Project_Path : String) is
    begin
       Ada.Text_IO.Put_Line ("Building: " & GPR_Project_Path);
-      Spawn (Alix.Config.Get ("gnatmake") & " -P " & GPR_Project_Path);
+      Alix.Processes.Spawn
+        (Alix.Config.Get ("gnatmake") & " -P " & GPR_Project_Path);
    end Build_Project;
 
    ------------------------
@@ -275,8 +275,9 @@ package body Alix.Installer is
 
          Ada.Directories.Set_Directory (Project_Path);
 
-         Spawn (Alix.Config.Get ("hg") & " clone "
-                & Alix.Config.Server_URL (Project_Name, Project_Version));
+         Alix.Processes.Spawn
+           (Alix.Config.Get ("hg") & " clone "
+            & Alix.Config.Server_URL (Project_Name, Project_Version));
       else
          Ada.Text_IO.Put_Line ("Skipping source clone");
       end if;
@@ -332,35 +333,6 @@ package body Alix.Installer is
       end if;
 
    end Read_Alix_File;
-
-   -----------
-   -- Spawn --
-   -----------
-
-   procedure Spawn (Command : String) is
-      use GNAT.OS_Lib;
-      Args        : Argument_List_Access;
-      Exit_Status : Integer;
-   begin
-      --  Prepare the arguments. Splitting properly takes quotes into account.
-
-      Args := Argument_String_To_List (Command);
-
-      --  Spawn the command and wait for its possible completion
-
-      Exit_Status := Spawn
-        (Program_Name => Args (Args'First).all,
-         Args         => Args (Args'First + 1 .. Args'Last));
-
-      --  Free memory
-      Free (Args);
-
-      if Exit_Status /= 0 then
-         raise Constraint_Error with
-           "spawn: could not execute " & Command;
-      end if;
-
-   end Spawn;
 
    ----------------------------
    -- Write_Config_Path_Unit --
