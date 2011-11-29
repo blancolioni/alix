@@ -9,6 +9,7 @@ with Tropos.Reader;
 with Alix.Commands;
 with Alix.Config;
 with Alix.Directories;
+with Alix.Projects;
 with Alix.Processes;
 with Alix.Status;
 with Alix.Versions;
@@ -17,8 +18,17 @@ package body Alix.Installer is
 
    function Pull_Source
      (Project_Name    : String;
+      Repository      : String;
       Project_Version : String)
       return String;
+   pragma Unreferenced (Pull_Source);
+
+   function Copy_Source
+     (Project_Name    : String;
+      Project_Version : String)
+      return String;
+
+   pragma Unreferenced (Copy_Source);
 
    function Read_Alix_File (Installation_Path : String)
                              return Tropos.Configuration;
@@ -102,16 +112,10 @@ package body Alix.Installer is
             if not Alix.Status.Is_Installed (Project_Dep, Version_Dep) then
                declare
                   Project_Version : constant Alix.Versions.Version_Number :=
-                    Alix.Status.Get_Matching_Version
+                    Alix.Projects.Get_Matching_Version
                     (Project_Dep, Version_Dep);
                begin
-                  if Project_Version /= "" then
-                     Install (Project_Dep, Project_Version);
-                  else
-                     raise Constraint_Error with
-                       "Cannot find package "
-                       & Project_Dep & "-" & Project_Version;
-                  end if;
+                  Install (Project_Dep, Project_Version);
                end;
             end if;
          end if;
@@ -153,29 +157,93 @@ package body Alix.Installer is
          Build_Base        => "build");
    end Configure;
 
+   -----------------
+   -- Copy_Source --
+   -----------------
+
+   function Copy_Source
+     (Project_Name    : String;
+      Project_Version : String)
+      return String
+   is
+      Project_Path : constant String :=
+                       Alix.Config.Installation_Path (Project_Name,
+                                                      Project_Version);
+      Version_Path : constant String :=
+                       Ada.Directories.Compose (Project_Path,
+                                                Project_Name & "-"
+                                                & Project_Version);
+   begin
+
+      if not Alix.Commands.Skip_Source_Clone then
+
+         if Ada.Directories.Exists (Version_Path) then
+            return Version_Path;
+         end if;
+
+         Ada.Directories.Create_Path (Project_Path);
+         Ada.Directories.Set_Directory (Project_Path);
+
+         Ada.Text_IO.Put_Line ("Fetching " & Project_Name
+                               & "-" & Version_Path
+                               & ".tar.gz ...");
+
+         Alix.Processes.Spawn
+           (Alix.Config.Get ("wget")
+            & " "
+            & Alix.Config.Get ("repository_url")
+            & "/" & Project_Name
+            & "-" & Project_Version
+            & ".tar.gz");
+
+         Ada.Text_IO.Put_Line ("Extracting " & Project_Name
+                               & "-" & Version_Path
+                               & ".tar.gz ...");
+
+         Alix.Processes.Spawn
+           (Alix.Config.Get ("tar")
+            & " xfvz "
+            & Project_Name
+            & "-" & Project_Version
+            & ".tar.gz");
+
+      else
+         Ada.Text_IO.Put_Line ("Skipping source clone");
+      end if;
+
+      return Version_Path;
+   end Copy_Source;
+
    -------------
    -- Install --
    -------------
 
-   procedure  Install (Project_Name    : String;
-                       Project_Version : String := "Trunk")
+   procedure  Install (Project_Name     : String;
+                       Version_Template : String := "*")
    is
    begin
+
       Ada.Text_IO.Put_Line ("Install: " & Project_Name);
-      Ada.Text_IO.Put_Line ("Server URL: " &
-                              Alix.Config.Server_URL (Project_Name,
-                                                       Project_Version));
 
       declare
+         Project_Version  : constant String :=
+                              Alix.Projects.Get_Matching_Version
+                                (Project_Name,
+                                 Version_Template);
          Source_Directory : constant String :=
-                              Pull_Source (Project_Name,
-                                           Project_Version);
+                              Alix.Projects.Fetch_Project
+                                (Project_Name, Version_Template);
+--           Source_Directory : constant String :=
+--                                Pull_Source (Project_Name,
+--                                             Repository_Name,
+--                                             Version_Template);
          GPR_Project_Path : constant String :=
-                              Alix.Config.GPR_Project_Path (Project_Name);
+                              Alix.Status.GPR_Project_Path (Project_Name,
+                                                            Project_Version);
          Config           : constant Tropos.Configuration :=
                               Read_Alix_File (Source_Directory);
       begin
-         Ada.Text_IO.Put_Line ("Source pulled to " & Source_Directory);
+         Ada.Text_IO.Put_Line ("Source directory " & Source_Directory);
          Ada.Text_IO.Put_Line ("Found alix file: " & Config.Config_Name);
 
          Check_Dependencies (Config);
@@ -257,14 +325,16 @@ package body Alix.Installer is
 
    function Pull_Source
      (Project_Name    : String;
+      Repository      : String;
       Project_Version : String)
       return String
    is
       Project_Path : constant String :=
-                      Alix.Config.Installation_Path (Project_Name);
+                       Alix.Config.Installation_Path (Project_Name,
+                                                      Project_Version);
       Version_Path : constant String :=
                        Ada.Directories.Compose (Project_Path,
-                                                Project_Version);
+                                                Repository);
    begin
 
       if not Alix.Commands.Skip_Source_Clone then
@@ -275,9 +345,17 @@ package body Alix.Installer is
 
          Ada.Directories.Set_Directory (Project_Path);
 
-         Alix.Processes.Spawn
-           (Alix.Config.Get ("hg") & " clone "
-            & Alix.Config.Server_URL (Project_Name, Project_Version));
+         if Project_Version = "*" then
+            Alix.Processes.Spawn
+              (Alix.Config.Get ("hg") & " clone "
+               & Alix.Config.Server_URL (Project_Name, Project_Version));
+         else
+            Alix.Processes.Spawn
+              (Alix.Config.Get ("hg") & " clone "
+               & "-r " & Project_Version & " "
+               & Alix.Config.Server_URL (Project_Name, Project_Version));
+         end if;
+
       else
          Ada.Text_IO.Put_Line ("Skipping source clone");
       end if;
@@ -392,6 +470,7 @@ package body Alix.Installer is
       Build_Base        : String;
       Project_Config    : Tropos.Configuration)
    is
+      pragma Unreferenced (Project_Name);
       use Ada.Text_IO;
       File : File_Type;
 
@@ -486,7 +565,10 @@ package body Alix.Installer is
 
       Project_Config.Iterate ("depend", Write_Project_With'Access);
 
-      Put_Line (File, "project " & Project_Name & " is");
+      Put_Line (File,
+                "project "
+                & Ada.Directories.Base_Name (Project_File_Path)
+                & " is");
       New_Line (File);
       Put_Line (File, "   for Source_Dirs use (");
       First_Item  := True;
@@ -552,7 +634,11 @@ package body Alix.Installer is
 
       New_Line (File);
 
-      Put_Line (File, "end " & Project_Name & ";");
+      Put_Line (File,
+                "end "
+                & Ada.Directories.Base_Name (Project_File_Path)
+                & ";");
+
       Close (File);
 
    end Write_Project_File;

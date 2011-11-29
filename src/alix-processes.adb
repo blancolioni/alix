@@ -1,3 +1,5 @@
+with Ada.Text_IO;
+
 with GNAT.OS_Lib;
 
 package body Alix.Processes is
@@ -11,6 +13,9 @@ package body Alix.Processes is
       Args        : Argument_List_Access;
       Exit_Status : Integer;
    begin
+
+      Ada.Text_IO.Put_Line (Command);
+
       --  Prepare the arguments. Splitting properly takes quotes into account.
 
       Args := Argument_String_To_List (Command);

@@ -2,6 +2,42 @@ with Ada.Characters.Handling;
 
 package body Alix.Versions is
 
+   ----------------------
+   -- Get_Project_Name --
+   ----------------------
+
+   function Get_Project_Name
+     (Project_And_Version : String)
+      return String
+   is
+   begin
+      for I in Project_And_Version'Range loop
+         if Project_And_Version (I) = '-' then
+            return Project_And_Version
+              (Project_And_Version'First .. I - 1);
+         end if;
+      end loop;
+      return Project_And_Version;
+   end Get_Project_Name;
+
+   -------------------------
+   -- Get_Project_Version --
+   -------------------------
+
+   function Get_Project_Version
+     (Project_And_Version : String)
+      return Version_Number
+   is
+   begin
+      for I in Project_And_Version'Range loop
+         if Project_And_Version (I) = '-' then
+            return Project_And_Version
+              (I + 1 .. Project_And_Version'Last);
+         end if;
+      end loop;
+      return "*";
+   end Get_Project_Version;
+
    --------------------
    -- Match_Versions --
    --------------------
