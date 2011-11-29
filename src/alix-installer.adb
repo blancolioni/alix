@@ -106,18 +106,21 @@ package body Alix.Installer is
                                     & Project_Dep);
          else
 
-            Ada.Text_IO.Put_Line ("dependency: "
-                                    & Project_Dep & "-" & Version_Dep);
+            declare
+               Project_Version : constant Alix.Versions.Version_Number :=
+                                   Alix.Projects.Get_Matching_Version
+                                     (Project_Dep, Version_Dep);
+            begin
 
-            if not Alix.Status.Is_Installed (Project_Dep, Version_Dep) then
-               declare
-                  Project_Version : constant Alix.Versions.Version_Number :=
-                    Alix.Projects.Get_Matching_Version
-                    (Project_Dep, Version_Dep);
-               begin
+               Ada.Text_IO.Put_Line ("dependency: "
+                                     & Project_Dep & "-" & Project_Version);
+
+               if not Alix.Status.Is_Installed
+                 (Project_Dep, Project_Version)
+               then
                   Install (Project_Dep, Project_Version);
-               end;
-            end if;
+               end if;
+            end;
          end if;
 
       end Check_Dependency;
