@@ -13,10 +13,10 @@ package body Alix.Updater is
    procedure Update is
    begin
       Ada.Directories.Set_Directory (Alix.Paths.Config_Path);
-      Ada.Directories.Delete_File ("packages.alix");
+      Ada.Directories.Delete_File ("projects.alix");
       Alix.Processes.Spawn
         (Alix.Config.Get ("wget") & " "
-         & Alix.Config.Get ("repository_url") & "/packages.alix");
+         & Alix.Config.Get ("repository_url") & "/projects.alix");
    end Update;
 
 end Alix.Updater;
