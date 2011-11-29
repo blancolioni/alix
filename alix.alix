@@ -1,7 +1,7 @@
 project_name = Alix
 source_dir = src
-depend = { project = WLib version = any }
-depend = { project = Tropos version = any }
+depend = { project = WLib version = 1.* }
+depend = { project = Tropos version = 1.* }
 main_unit = alix-driver
 exec_name = alix
 config_dir = config
