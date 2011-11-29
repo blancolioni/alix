@@ -526,11 +526,14 @@ package body Alix.Installer is
                         & Ada.Characters.Handling.To_Lower (Project_Dep)
                         & """;");
          else
-            Put_Line (File,
-                      "with """
-                        & Alix.Status.Get_GPR_Project_Name
-                        (Project_Dep, Version_Dep)
-                        & """;");
+            Put_Line
+              (File,
+               "with """
+               & Alix.Status.Get_GPR_Project_Name
+                 (Project_Dep,
+                  Alix.Projects.Get_Matching_Version
+                    (Project_Dep, Version_Dep))
+               & """;");
          end if;
       end Write_Project_With;
 
