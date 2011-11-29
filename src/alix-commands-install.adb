@@ -1,6 +1,7 @@
 with Ada.Text_IO;
 
 with Alix.Installer;
+with Alix.Versions;
 
 package body Alix.Commands.Install is
 
@@ -17,12 +18,24 @@ package body Alix.Commands.Install is
       pragma Unreferenced (Handler);
    begin
       if WL.Command_Line.Argument_Count /= 1 then
-         Ada.Text_IO.Put_Line (Ada.Text_IO.Standard_Error,
-                               "Usage: install project-name");
+         Ada.Text_IO.Put_Line
+           (Ada.Text_IO.Standard_Error,
+            "Usage: install project-name");
          return;
       end if;
 
-      Alix.Installer.Install (WL.Command_Line.Argument (1));
+      declare
+         Project_And_Version : constant String :=
+                                 WL.Command_Line.Argument (1);
+         Project_Name        : constant String :=
+                                 Alix.Versions.Get_Project_Name
+                                   (Project_And_Version);
+         Project_Version     : constant Alix.Versions.Version_Number :=
+                                 Alix.Versions.Get_Project_Version
+                                   (Project_And_Version);
+      begin
+         Alix.Installer.Install (Project_Name, Project_Version);
+      end;
 
    end Execute;
 

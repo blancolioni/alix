@@ -10,6 +10,19 @@ package body Alix.Commands.Configure is
 
    procedure Execute (Handler : Configure_Handler_Type);
 
+   -----------------------
+   -- Configure_Handler --
+   -----------------------
+
+   function Configure_Handler
+      return WL.Command_Line.Root_Argument_Handler'Class
+   is
+   begin
+      return Configure : Configure_Handler_Type do
+        null;
+      end return;
+   end Configure_Handler;
+
    -------------
    -- Execute --
    -------------
@@ -26,18 +39,5 @@ package body Alix.Commands.Configure is
       Alix.Installer.Configure (Ada.Directories.Current_Directory);
 
    end Execute;
-
-   ---------------------
-   -- Configure_Handler --
-   ---------------------
-
-   function Configure_Handler
-      return WL.Command_Line.Root_Argument_Handler'Class
-   is
-   begin
-      return Configure : Configure_Handler_Type do
-        null;
-      end return;
-   end Configure_Handler;
 
 end Alix.Commands.Configure;

@@ -1,14 +1,9 @@
 with Ada.Characters.Handling;
 with Ada.Directories;
 
-with Tropos.Reader;
-
 with Alix.Config;
 
 package body Alix.Status is
-
-   Have_Package_Config : Boolean := False;
-   Package_Config      : Tropos.Configuration;
 
    function Version_To_Ada_Identifier
      (Version : Alix.Versions.Version_Number)
@@ -28,6 +23,7 @@ package body Alix.Status is
    begin
       if Version = "any"
         or else Version = "Trunk"
+        or else Version = ""
       then
          return Base_Name;
       else
@@ -35,44 +31,64 @@ package body Alix.Status is
       end if;
    end Get_GPR_Project_Name;
 
+   ----------------------
+   -- GPR_Project_Path --
+   ----------------------
+
+   function GPR_Project_Path
+     (Project_Name    : String;
+      Project_Version : String)
+      return String
+   is
+      Install_Path : constant String :=
+                       Alix.Config.Get ("install_path");
+      Project_Path : constant String :=
+                       Ada.Directories.Compose
+                         (Install_Path,
+                          Get_GPR_Project_Name (Project_Name, Project_Version)
+                          & ".gpr");
+   begin
+      return Project_Path;
+   end GPR_Project_Path;
+
    --------------------------
    -- Get_Matching_Version --
    --------------------------
 
-   function Get_Matching_Version
-     (Project_Name     : String;
-      Version_Template : Alix.Versions.Version_Number)
-      return Alix.Versions.Version_Number
-   is
-   begin
-      if not Have_Package_Config then
-         Package_Config :=
-           Tropos.Reader.Read_Config
-             (Alix.Config.Configuration_File_Path ("packages.alix"));
-         Have_Package_Config := True;
-      end if;
-
-      declare
-         Vs : constant Tropos.Configuration :=
-           Package_Config.Child (Project_Name);
-         It : Tropos.Cursor := Vs.First;
-      begin
-         while Tropos.Has_Element (It) loop
-
-            if Alix.Versions.Match_Versions
-              (Version  => Tropos.Element (It).Config_Name,
-               Template => Version_Template)
-            then
-               return Tropos.Element (It).Config_Name;
-            end if;
-
-            Tropos.Next (It);
-         end loop;
-      end;
-
-      return "";
-
-   end Get_Matching_Version;
+--     function Get_Matching_Version
+--       (Project_Name     : String;
+--        Version_Template : Alix.Versions.Version_Number)
+--        return Alix.Versions.Version_Number
+--     is
+--     begin
+--        if not Have_Package_Config then
+--           Package_Config :=
+--             Tropos.Reader.Read_Config
+--               (Alix.Config.Configuration_File_Path ("packages.alix"));
+--           Have_Package_Config := True;
+--        end if;
+--
+--        declare
+--           Vs : constant Tropos.Configuration :=
+--             Package_Config.Child (Project_Name);
+--           It : Tropos.Cursor := Vs.First;
+--        begin
+--           while Tropos.Has_Element (It) loop
+--
+--              if Alix.Versions.Match_Versions
+--                (Version  => Tropos.Element (It).Config_Name,
+--                 Template => Version_Template)
+--              then
+--                 return Tropos.Element (It).Config_Name;
+--              end if;
+--
+--              Tropos.Next (It);
+--           end loop;
+--        end;
+--
+--        return "";
+--
+--     end Get_Matching_Version;
 
    ------------------
    -- Is_Installed --
@@ -84,12 +100,9 @@ package body Alix.Status is
       return Boolean
    is
       Project_Path : constant String :=
-                      Alix.Config.Installation_Path (Project_Name);
-      Version_Path : constant String :=
-                       Ada.Directories.Compose (Project_Path,
-                                                Version);
+                      Alix.Config.Installation_Path (Project_Name, Version);
    begin
-      return Ada.Directories.Exists (Version_Path);
+      return Ada.Directories.Exists (Project_Path);
    end Is_Installed;
 
    ------------------------------

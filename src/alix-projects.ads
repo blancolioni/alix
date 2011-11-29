@@ -1,38 +1,22 @@
-with Ada.Containers.Indefinite_Vectors;
-
 package Alix.Projects is
 
-   type Alix_Project is private;
+   Project_Not_Found : exception;
 
-   function Create_Project
-     (Project_Name   : String;
-      Trunk_Name     : String)
-     return Alix_Project;
+   function Fetch_Project
+     (Project_Name     : String;
+      Version_Template : String)
+      return String;
+   --  Find a project with the given name which matches the version template
+   --  If the version template is "*" or "any", get the most recent version
+   --  If the project source is not already stored locally, fetch it from
+   --  the server named in the Project.alix config file
+   --  Return the full path to the project's source folder
+   --  The Project_Not_Found exception is raised if the project does not exist,
+   --  or the version template cannot be matched.
 
-   procedure Add_Source_Directory
-     (Project : in out Alix_Project;
-      Path    : in     String);
-
-   procedure Enable_Style_Checks
-     (Project : in out Alix_Project;
-      Enabled : in     Boolean);
-
-   procedure Enable_Ada_2012
-     (Project : in out Alix_Project;
-      Enabled : in     Boolean);
-
-private
-
-   package String_Vectors is
-      new Ada.Containers.Indefinite_Vectors (Positive, String);
-
-   type Alix_Project is
-      record
-         Project_Name : access String;
-         Trunk_Name   : access String;
-         Source_Dirs  : String_Vectors.Vector;
-         Style_Checks : Boolean                 := True;
-         Ada_2012     : Boolean                 := False;
-      end record;
+   function Get_Matching_Version
+     (Project_Name     : String;
+      Version_Template : String)
+      return String;
 
 end Alix.Projects;

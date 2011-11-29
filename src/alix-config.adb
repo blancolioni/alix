@@ -16,6 +16,11 @@ package body Alix.Config is
       New_Value : String)
      return String;
 
+   function Create_Project_And_Version
+     (Project_Name : String;
+      Version_Name : String)
+      return String;
+
    -----------------------------
    -- Configuration_File_Path --
    -----------------------------
@@ -29,6 +34,28 @@ package body Alix.Config is
         (Alix.Paths.Config_Path,
          File_Name);
    end Configuration_File_Path;
+
+   --------------------------------
+   -- Create_Project_And_Version --
+   --------------------------------
+
+   function Create_Project_And_Version
+     (Project_Name : String;
+      Version_Name : String)
+      return String
+   is
+      Lower_Name : constant String :=
+                     Ada.Characters.Handling.To_Lower (Project_Name);
+   begin
+      if Version_Name = ""
+        or else Version_Name = "*"
+        or else Version_Name = "any"
+      then
+         return Lower_Name;
+      else
+         return Lower_Name & "-" & Version_Name;
+      end if;
+   end Create_Project_And_Version;
 
    ---------
    -- Get --
@@ -68,31 +95,20 @@ package body Alix.Config is
       return Ada.Directories.Compose (Global_Build_Path, "obj");
    end Global_Object_Path;
 
-   ----------------------
-   -- GPR_Project_Path --
-   ----------------------
-
-   function GPR_Project_Path
-     (Project_Name    : String)
-      return String
-   is
-      Install_Path : constant String :=
-                       Local_Config.Get ("install_path");
-      Project_Path : constant String :=
-                       Ada.Directories.Compose
-                         (Install_Path,
-                          Ada.Characters.Handling.To_Lower (Project_Name)
-                          & ".gpr");
+   function Global_Source_Path return String is
    begin
-      return Project_Path;
-   end GPR_Project_Path;
+      return Ada.Directories.Compose
+        (Local_Config.Get ("install_path"),
+         "source");
+   end Global_Source_Path;
 
    -----------------------
    -- Installation_Path --
    -----------------------
 
    function Installation_Path
-     (Project_Name    : String)
+     (Project_Name    : String;
+      Version_Name    : String)
       return String
    is
       Install_Path : constant String :=
@@ -101,10 +117,13 @@ package body Alix.Config is
                        Ada.Directories.Compose
                          (Install_Path,
                           "source");
+      Project_And_Version : constant String :=
+                              Create_Project_And_Version (Project_Name,
+                                                          Version_Name);
       Project_Path : constant String :=
                        Ada.Directories.Compose
                          (Source_Path,
-                          Project_Name);
+                          Project_And_Version);
    begin
       if not Ada.Directories.Exists (Install_Path) then
          Ada.Text_IO.Put_Line
@@ -133,11 +152,11 @@ package body Alix.Config is
          Ada.Directories.Create_Directory (Source_Path);
       end if;
 
-      if not Ada.Directories.Exists (Project_Path) then
-         Ada.Text_IO.Put_Line
-           ("Creating project directory " & Project_Path);
-         Ada.Directories.Create_Directory (Project_Path);
-      end if;
+--        if not Ada.Directories.Exists (Project_Path) then
+--           Ada.Text_IO.Put_Line
+--             ("Creating project directory " & Project_Path);
+--           Ada.Directories.Create_Directory (Project_Path);
+--        end if;
 
       return Project_Path;
 
@@ -158,17 +177,15 @@ package body Alix.Config is
                        Ada.Directories.Compose
                          (Install_Path,
                           "config");
+      Config_Directory : constant String :=
+                           Create_Project_And_Version (Project_Name,
+                                                       Project_Version);
       Project_Path : constant String :=
                        Ada.Directories.Compose
-                         (Config_Path, Project_Name);
-      Version_Path : constant String :=
-                       Ada.Directories.Compose
-                         (Project_Path, Project_Version);
-
-
+                         (Config_Path, Config_Directory);
    begin
-      Ada.Directories.Create_Path (Version_Path);
-      return Version_Path;
+      Ada.Directories.Create_Path (Project_Path);
+      return Project_Path;
    end Project_Config_Path;
 
    -------------------------------

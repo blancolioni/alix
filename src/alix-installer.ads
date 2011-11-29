@@ -1,7 +1,7 @@
 package Alix.Installer is
 
-   procedure  Install (Project_Name    : String;
-                       Project_Version : String := "Trunk");
+   procedure  Install (Project_Name     : String;
+                       Version_Template : String := "*");
 
    procedure  Configure (Directory : String);
 

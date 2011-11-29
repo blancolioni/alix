@@ -9,16 +9,13 @@ package Alix.Config is
      return String;
 
    function Installation_Path
-     (Project_Name    : String)
+     (Project_Name    : String;
+      Version_Name    : String)
       return String;
 
    function Project_Config_Path
      (Project_Name    : String;
       Project_Version : String)
-      return String;
-
-   function GPR_Project_Path
-     (Project_Name    : String)
       return String;
 
    function Configuration_File_Path
@@ -28,6 +25,7 @@ package Alix.Config is
    function Global_Build_Path return String;
    function Global_Exec_Path return String;
    function Global_Object_Path return String;
+   function Global_Source_Path return String;
 
    function Pull_Script_Template_Path
      return String;
