@@ -47,3 +47,11 @@ memor = {
 xml = {
   hg = "https://thewhitelion.kilnhg.com/Repo/XML/Group/Trunk"
 }
+
+sk = {
+  hg = "https://thewhitelion.kilnhg.com/Repo/SK/Group/Trunk"
+}
+
+leander = {
+  hg = "https://thewhitelion.kilnhg.com/Repo/Leander/Group/Trunk"
+}
