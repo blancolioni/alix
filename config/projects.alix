@@ -13,6 +13,11 @@ marlowe = {
   version = 1.0
 }
 
+slim = {
+  hg = "https://thewhitelion.kilnhg.com/Repo/Slim/Group/Trunk"
+  version = 1.0
+}
+
 tropos = {
   hg = "https://thewhitelion.kilnhg.com/Repo/Tropos/Group/Trunk"
   version = 1.0
@@ -54,4 +59,8 @@ sk = {
 
 leander = {
   hg = "https://thewhitelion.kilnhg.com/Repo/Leander/Group/Trunk"
+}
+
+xi = {
+  hg = "https://thewhitelion.kilnhg.com/Repo/Xi/Group/Trunk"
 }
