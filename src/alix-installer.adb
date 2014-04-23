@@ -649,6 +649,15 @@ package body Alix.Installer is
 
       New_Line (File);
 
+      if Project_Config.Contains ("language") then
+         First_Item := True;
+         Put (File, "   for Languages use (");
+         Project_Config.Iterate ("language",
+                                 Write_Single_Line_List'Access);
+         Put_Line (File, ");");
+         New_Line (File);
+      end if;
+
       Put_Line (File,
                 "end "
                 & Ada.Directories.Base_Name (Project_File_Path)
