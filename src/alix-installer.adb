@@ -50,6 +50,7 @@ package body Alix.Installer is
      (Project_Name     : String;
       Project_Version  : String;
       Source_Directory : String;
+      Config_Directory : String;
       Config           : Tropos.Configuration);
    --  If Config contains a config path element, write a corresponding
    --  unit which names the config path defined by
@@ -150,7 +151,7 @@ package body Alix.Installer is
       Check_Dependencies (Config);
 
       Write_Config_Path_Unit
-        (Project_Name, "", Directory, Config);
+        (Project_Name, "", Directory, "", Config);
 
       Write_Project_File
         (Project_Name      => Config.Get ("project_name"),
@@ -236,10 +237,10 @@ package body Alix.Installer is
          Source_Directory : constant String :=
                               Alix.Projects.Fetch_Project
                                 (Project_Name, Version_Template);
---           Source_Directory : constant String :=
---                                Pull_Source (Project_Name,
---                                             Repository_Name,
---                                             Version_Template);
+         Config_Directory : constant String :=
+                              Alix.Config.Project_Config_Path
+                                (Project_Name,
+                                 Project_Version);
          GPR_Project_Path : constant String :=
                               Alix.Status.GPR_Project_Path (Project_Name,
                                                             Project_Version);
@@ -247,12 +248,16 @@ package body Alix.Installer is
                               Read_Alix_File (Source_Directory);
       begin
          Ada.Text_IO.Put_Line ("Source directory " & Source_Directory);
+         Ada.Text_IO.Put_Line ("Config directory " & Config_Directory);
          Ada.Text_IO.Put_Line ("Found alix file: " & Config.Config_Name);
 
          Check_Dependencies (Config);
 
-         Write_Config_Path_Unit (Project_Name, Project_Version,
-                                 Source_Directory, Config);
+         Write_Config_Path_Unit (Project_Name     => Project_Name,
+                                 Project_Version  => Project_Version,
+                                 Source_Directory => Source_Directory,
+                                 Config_Directory => Config_Directory,
+                                 Config           => Config);
 
          Write_Project_File
            (Project_Name      => Project_Name,
@@ -423,6 +428,7 @@ package body Alix.Installer is
      (Project_Name     : String;
       Project_Version  : String;
       Source_Directory : String;
+      Config_Directory : String;
       Config           : Tropos.Configuration)
    is
    begin
@@ -433,12 +439,15 @@ package body Alix.Installer is
             Path_Unit_Config : constant Tropos.Configuration :=
               Config.Child ("path_unit");
             Config_Path      : constant String :=
-              (if Project_Version = ""
-                 then Ada.Directories.Compose (Source_Directory,
-                                               Config.Get ("config_dir"))
-                 else Alix.Config.Project_Config_Path
-                   (Project_Name,
-                    Project_Version));
+                  (if Config_Directory /= ""
+                   then Config_Directory
+                   elsif Project_Version = ""
+                   then Ada.Directories.Compose
+                     (Source_Directory,
+                      Config.Get ("config_dir"))
+                   else Alix.Config.Project_Config_Path
+                     (Project_Name,
+                      Project_Version));
          begin
             Create
               (File, Out_File,
