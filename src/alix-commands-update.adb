@@ -1,6 +1,6 @@
 with Ada.Text_IO;
 
-with Alix.Updater;
+with Alix.Installer;
 
 package body Alix.Commands.Update is
 
@@ -16,14 +16,19 @@ package body Alix.Commands.Update is
    procedure Execute (Handler : Update_Handler_Type) is
       pragma Unreferenced (Handler);
    begin
-      if WL.Command_Line.Argument_Count /= 0 then
-         Ada.Text_IO.Put_Line (Ada.Text_IO.Standard_Error,
-                               "Usage: update");
+      if WL.Command_Line.Argument_Count /= 1 then
+         Ada.Text_IO.Put_Line
+           (Ada.Text_IO.Standard_Error,
+            "Usage: install project-name");
          return;
       end if;
 
-      Alix.Updater.Update;
-
+      declare
+         Project_Name : constant String :=
+                          WL.Command_Line.Argument (1);
+      begin
+         Alix.Installer.Install (Project_Name);
+      end;
    end Execute;
 
    ---------------------
