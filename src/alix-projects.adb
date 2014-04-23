@@ -1,5 +1,6 @@
 with Ada.Characters.Handling;
 with Ada.Directories;
+with Ada.Text_IO;
 
 with Tropos.Reader;
 
@@ -41,6 +42,8 @@ package body Alix.Projects is
    --  Use an hg clone command to copy source from the repository.
    --  If Project_Version is not empty, use the -r option to clone
    --  a particular version.
+   --  If the project directory already exists, use a pull followed by
+   --  an update.
    --  Return the source directory path
 
    function Copy_Source
@@ -67,21 +70,40 @@ package body Alix.Projects is
                                                       Project_Version);
    begin
 
-      if not Alix.Commands.Skip_Source_Clone then
-
-         if Project_Version = "" then
+      if Ada.Directories.Exists (Project_Path) then
+         if Project_Version = ""
+           or else Project_Version = "*"
+           or else Project_Version = "any"
+         then
+            Ada.Text_IO.Put_Line
+              ("Updating existing source in " & Project_Path);
+            Ada.Directories.Set_Directory
+              (Project_Path);
             Alix.Processes.Spawn
-              (Alix.Config.Get ("hg") & " clone "
-               & Repository_URL & " "
-               & Project_Path);
+              (Alix.Config.Get ("hg") & " pull");
+            Alix.Processes.Spawn
+              (Alix.Config.Get ("hg") & " update");
          else
-            Alix.Processes.Spawn
-              (Alix.Config.Get ("hg") & " clone "
-               & "-r " & Project_Version & " "
-               & Repository_URL & " "
-               & Project_Path);
+            Ada.Text_IO.Put_Line
+              ("Not updating version " & Project_Version);
          end if;
+      else
+         if not Alix.Commands.Skip_Source_Clone then
 
+            if Project_Version = "" then
+               Alix.Processes.Spawn
+                 (Alix.Config.Get ("hg") & " clone "
+                  & Repository_URL & " "
+                  & Project_Path);
+            else
+               Alix.Processes.Spawn
+                 (Alix.Config.Get ("hg") & " clone "
+                  & "-r " & Project_Version & " "
+                  & Repository_URL & " "
+                  & Project_Path);
+            end if;
+
+         end if;
       end if;
 
       return Project_Path;
