@@ -64,3 +64,7 @@ leander = {
 xi = {
   hg = "https://thewhitelion.kilnhg.com/Repo/Xi/Group/Trunk"
 }
+
+aquarius = {
+  hg = "https://thewhitelion.kilnhg.com/Repo/Aquarius/Group/Trunk"
+}
