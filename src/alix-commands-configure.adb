@@ -36,7 +36,9 @@ package body Alix.Commands.Configure is
          return;
       end if;
 
-      Alix.Installer.Configure (Ada.Directories.Current_Directory);
+      Alix.Installer.Configure
+        (Directory => Ada.Directories.Current_Directory,
+         Mode      => "configure");
 
    end Execute;
 

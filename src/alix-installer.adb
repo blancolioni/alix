@@ -9,6 +9,7 @@ with Tropos.Reader;
 with Alix.Commands;
 with Alix.Config;
 with Alix.Directories;
+with Alix.Paths;
 with Alix.Projects;
 with Alix.Processes;
 with Alix.Status;
@@ -38,7 +39,8 @@ package body Alix.Installer is
       Project_File_Path : String;
       Source_Directory  : String;
       Build_Base        : String;
-      Project_Config    : Tropos.Configuration);
+      Project_Config    : Tropos.Configuration;
+      Alix_Config       : Tropos.Configuration);
    --  Create a project file Project_Name in the directory given
    --  by Project_File_Path.  Source_Directory is the base for
    --  source paths given by the Project_Config configuration
@@ -134,9 +136,16 @@ package body Alix.Installer is
    -- Configure --
    ---------------
 
-   procedure  Configure (Directory : String) is
+   procedure  Configure
+     (Directory : String;
+      Mode      : String)
+   is
       Config           : constant Tropos.Configuration :=
         Read_Alix_File (Directory);
+      Alix_Config      : constant Tropos.Configuration :=
+                           Tropos.Reader.Read_Config
+                             (Alix.Paths.Config_Path
+                              & "/alix.config");
 
       Project_Name     : constant String :=
         Config.Get ("project_name");
@@ -158,6 +167,7 @@ package body Alix.Installer is
          Project_File_Path => Project_File_Path,
          Source_Directory  => ".",
          Project_Config    => Config,
+         Alix_Config       => Alix_Config.Child (Mode),
          Build_Base        => "build");
    end Configure;
 
@@ -246,6 +256,10 @@ package body Alix.Installer is
                                                             Project_Version);
          Config           : constant Tropos.Configuration :=
                               Read_Alix_File (Source_Directory);
+         Alix_Config      : constant Tropos.Configuration :=
+                              Tropos.Reader.Read_Config
+                                (Alix.Paths.Config_Path
+                                 & "/alix.config");
       begin
          Ada.Text_IO.Put_Line ("Source directory " & Source_Directory);
          Ada.Text_IO.Put_Line ("Config directory " & Config_Directory);
@@ -264,6 +278,7 @@ package body Alix.Installer is
             Project_File_Path => GPR_Project_Path,
             Source_Directory  => Source_Directory,
             Project_Config    => Config,
+            Alix_Config       => Alix_Config.Child ("install"),
             Build_Base        => Alix.Config.Global_Build_Path);
 
          Build_Project (GPR_Project_Path);
@@ -480,7 +495,8 @@ package body Alix.Installer is
       Project_File_Path : String;
       Source_Directory  : String;
       Build_Base        : String;
-      Project_Config    : Tropos.Configuration)
+      Project_Config    : Tropos.Configuration;
+      Alix_Config       : Tropos.Configuration)
    is
       pragma Unreferenced (Project_Name);
       use Ada.Text_IO;
@@ -616,8 +632,8 @@ package body Alix.Installer is
       Put (File,
                 "      for Default_Switches (""ada"") use (");
       First_Item := True;
-      Project_Config.Iterate ("builder_option",
-                              Write_Single_Line_List'Access);
+      Alix_Config.Iterate ("builder_option",
+                           Write_Single_Line_List'Access);
       Put_Line (File, ");");
       Put_Line (File,
                 "   end Builder;");
@@ -628,8 +644,8 @@ package body Alix.Installer is
       Put (File,
                 "      for Default_Switches (""ada"") use (");
       First_Item := True;
-      Project_Config.Iterate ("compiler_option",
-                              Write_Single_Line_List'Access);
+      Alix_Config.Iterate ("compiler_option",
+                           Write_Single_Line_List'Access);
       Put_Line (File, ");");
       Put_Line (File,
                 "   end Compiler;");
