@@ -68,3 +68,7 @@ xi = {
 aquarius = {
   hg = "https://thewhitelion.kilnhg.com/Repo/Aquarius/Group/Trunk"
 }
+
+lith = {
+  hg = "https://thewhitelion.kilnhg.com/Repo/Lith/Group/Trunk"
+}
