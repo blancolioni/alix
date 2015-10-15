@@ -471,12 +471,21 @@ package body Alix.Installer is
 
             Put_Line (File,
                       "package " & Path_Unit_Config.Get ("unit")
-                        & " is");
+                      & " is");
+
             New_Line (File);
+
             Put_Line (File, "   Config_Path : constant String :=");
             Put_Line (File,
                       "     """ & Config_Path & """;");
             New_Line (File);
+            Put_Line (File, "   function Config_File");
+            Put_Line (File, "     (File_Path : String)");
+            Put_Line (File, "     return String");
+            Put_Line (File, "   is (Config_Path & ""/"" & File_Path);");
+
+            New_Line (File);
+
             Put_Line (File,
                       "end " & Path_Unit_Config.Get ("unit")
                         & ";");
