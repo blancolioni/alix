@@ -19,8 +19,8 @@ package body Alix.Commands is
          Flag : Command_Flag;
       end record;
 
-   procedure Handle_Clear (Handler : in out Flag_Handler);
-   procedure Handle_Set (Handler : in out Flag_Handler);
+   overriding procedure Handle_Clear (Handler : in out Flag_Handler);
+   overriding procedure Handle_Set (Handler : in out Flag_Handler);
 
    -------------
    -- Execute --
@@ -35,7 +35,7 @@ package body Alix.Commands is
    -- Handle_Clear --
    ------------------
 
-   procedure Handle_Clear (Handler : in out Flag_Handler) is
+   overriding procedure Handle_Clear (Handler : in out Flag_Handler) is
    begin
       Flag_Values (Handler.Flag) := False;
    end Handle_Clear;
@@ -44,7 +44,7 @@ package body Alix.Commands is
    -- Handle_Set --
    ----------------
 
-   procedure Handle_Set (Handler : in out Flag_Handler) is
+   overriding procedure Handle_Set (Handler : in out Flag_Handler) is
    begin
       Flag_Values (Handler.Flag) := True;
    end Handle_Set;

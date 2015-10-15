@@ -8,13 +8,13 @@ package body Alix.Commands.Install is
    type Install_Handler_Type is
      new WL.Command_Line.Dispatch_Handler with null record;
 
-   procedure Execute (Handler : Install_Handler_Type);
+   overriding procedure Execute (Handler : Install_Handler_Type);
 
    -------------
    -- Execute --
    -------------
 
-   procedure Execute (Handler : Install_Handler_Type) is
+   overriding procedure Execute (Handler : Install_Handler_Type) is
       pragma Unreferenced (Handler);
    begin
       if WL.Command_Line.Argument_Count /= 1 then
@@ -48,7 +48,7 @@ package body Alix.Commands.Install is
    is
    begin
       return Install : Install_Handler_Type do
-        null;
+         null;
       end return;
    end Install_Handler;
 

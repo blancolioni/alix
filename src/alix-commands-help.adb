@@ -4,15 +4,18 @@ package body Alix.Commands.Help is
      new WL.Command_Line.Flag_Argument_Handler with
      null record;
 
-   procedure Handle_Set (Handler : in out Help_Handler_Type);
+   overriding procedure Handle_Set (Handler : in out Help_Handler_Type);
 
-   function Exit_After (Handler : Help_Handler_Type) return Boolean;
+   overriding function Exit_After (Handler : Help_Handler_Type) return Boolean;
 
    ----------------
    -- Exit_After --
    ----------------
 
-   function Exit_After (Handler : Help_Handler_Type) return Boolean is
+   overriding function Exit_After
+     (Handler : Help_Handler_Type)
+      return Boolean
+   is
       pragma Unreferenced (Handler);
    begin
       return True;
@@ -22,7 +25,7 @@ package body Alix.Commands.Help is
    -- Handle_Set --
    ----------------
 
-   procedure Handle_Set (Handler : in out Help_Handler_Type) is
+   overriding procedure Handle_Set (Handler : in out Help_Handler_Type) is
       pragma Unreferenced (Handler);
    begin
       WL.Command_Line.Show_Usage;
@@ -37,9 +40,8 @@ package body Alix.Commands.Help is
    is
    begin
       return H : Help_Handler_Type do
-        null;
+         null;
       end return;
    end Help_Handler;
 
 end Alix.Commands.Help;
-

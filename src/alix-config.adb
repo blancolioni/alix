@@ -239,10 +239,10 @@ package body Alix.Config is
       use WL.Text;
    begin
       return Result : Text_Replacement do
-        Add (Result, "Project", Project_Name);
-        Add (Result, "Version", Project_Version);
-        Add (Result, "Temp_Folder", Local_Config.Get ("temp_path"));
-        Add (Result, "Server", Server_URL (Project_Name, Project_Version));
+         Add (Result, "Project", Project_Name);
+         Add (Result, "Version", Project_Version);
+         Add (Result, "Temp_Folder", Local_Config.Get ("temp_path"));
+         Add (Result, "Server", Server_URL (Project_Name, Project_Version));
       end return;
    end Standard_Replacement;
 
