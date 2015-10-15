@@ -7,13 +7,13 @@ package body Alix.Commands.Update is
    type Update_Handler_Type is
      new WL.Command_Line.Dispatch_Handler with null record;
 
-   procedure Execute (Handler : Update_Handler_Type);
+   overriding procedure Execute (Handler : Update_Handler_Type);
 
    -------------
    -- Execute --
    -------------
 
-   procedure Execute (Handler : Update_Handler_Type) is
+   overriding procedure Execute (Handler : Update_Handler_Type) is
       pragma Unreferenced (Handler);
    begin
       if WL.Command_Line.Argument_Count /= 1 then
@@ -40,7 +40,7 @@ package body Alix.Commands.Update is
    is
    begin
       return Update : Update_Handler_Type do
-        null;
+         null;
       end return;
    end Update_Handler;
 

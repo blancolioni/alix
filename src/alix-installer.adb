@@ -70,7 +70,6 @@ package body Alix.Installer is
    --  dependencies are not installed, attempt to install them.  This
    --  might cause further dependency checks and installations.
 
-
    -------------------
    -- Build_Project --
    -------------------

@@ -6,4 +6,3 @@ private package Alix.Commands.Configure is
      return WL.Command_Line.Root_Argument_Handler'Class;
 
 end Alix.Commands.Configure;
-
