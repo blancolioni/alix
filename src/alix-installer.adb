@@ -4,6 +4,8 @@ with Ada.Exceptions;
 with Ada.Text_IO;
 with GNAT.OS_Lib;
 
+with WL.Text;
+
 with Tropos.Reader;
 
 with Alix.Commands;
@@ -329,7 +331,16 @@ package body Alix.Installer is
          end if;
 
          if Config.Contains ("post_install") then
-            Alix.Processes.Spawn (Config.Get ("post_install"));
+            declare
+               Command : constant String := Config.Get ("post_install");
+               Replacement : WL.Text.Text_Replacement;
+            begin
+               WL.Text.Add
+                 (Replacement, "[exec_path]", Alix.Config.Get ("exec_path"));
+
+               Alix.Processes.Spawn
+                 (WL.Text.Replace (Command, Replacement));
+            end;
          end if;
 
       end;
