@@ -328,6 +328,10 @@ package body Alix.Installer is
             end;
          end if;
 
+         if Config.Contains ("post_install") then
+            Alix.Processes.Spawn (Config.Get ("post_install"));
+         end if;
+
       end;
 
    exception
