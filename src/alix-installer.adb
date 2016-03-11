@@ -336,7 +336,7 @@ package body Alix.Installer is
                Replacement : WL.Text.Text_Replacement;
             begin
                WL.Text.Add
-                 (Replacement, "[exec_path]", Alix.Config.Get ("exec_path"));
+                 (Replacement, "exec_path", Alix.Config.Get ("exec_path"));
 
                Alix.Processes.Spawn
                  (WL.Text.Replace (Command, Replacement));
