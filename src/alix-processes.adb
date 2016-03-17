@@ -20,14 +20,23 @@ package body Alix.Processes is
 
       Args := Argument_String_To_List (Command);
 
-      --  Spawn the command and wait for its possible completion
+      declare
+         Qualified_Path : String_Access :=
+                            Locate_Exec_On_Path (Args (Args'First).all);
+      begin
+         --  Spawn the command and wait for its possible completion
 
-      Exit_Status := Spawn
-        (Program_Name => Args (Args'First).all,
-         Args         => Args (Args'First + 1 .. Args'Last));
+         Exit_Status := Spawn
+           (Program_Name =>
+              (if Qualified_Path /= null
+               then Qualified_Path.all
+               else Args (Args'First).all),
+            Args         => Args (Args'First + 1 .. Args'Last));
 
-      --  Free memory
-      Free (Args);
+         --  Free memory
+         Free (Args);
+         Free (Qualified_Path);
+      end;
 
       if Exit_Status /= 0 then
          raise Constraint_Error with
