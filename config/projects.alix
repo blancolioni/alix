@@ -40,13 +40,16 @@ kit = {
   hg = "https://thewhitelion.kilnhg.com/Repo/Kit/Group/Trunk"
 }
 
-sourcegen = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/SourceGen/Group/Trunk"
-  version = 1.0
+syn = {
+  hg = "https://thewhitelion.kilnhg.com/Repo/Syn/Group/Trunk"
 }
 
 memor = {
   hg = "https://thewhitelion.kilnhg.com/Repo/Memor/Group/Trunk"
+}
+
+nazar = {
+  hg = "https://thewhitelion.kilnhg.com/Repo/Nazar/Group/Trunk"
 }
 
 xml = {
