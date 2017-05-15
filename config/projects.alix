@@ -84,3 +84,12 @@ lui = {
 aqua = {
   hg = "https://thewhitelion.kilnhg.com/Repo/Aqua/Group/Trunk"
 }
+
+tagatha = {
+  hg = "https://thewhitelion.kilnhg.com/Repo/Tagatha/Group/Trunk"
+}
+
+machete = {
+  hg = "https://thewhitelion.kilnhg.com/Repo/Machete/Group/Trunk"
+}
+
