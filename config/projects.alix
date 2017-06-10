@@ -23,6 +23,11 @@ tropos = {
   version = 1.0
 }
 
+agama = {
+  hg = "https://thewhitelion.kilnhg.com/Repo/Agama/Group/Trunk"
+  version = 1.0
+}
+
 alix = {
   hg = "https://thewhitelion.kilnhg.com/Repo/Alix/Group/Trunk"
   version = 0.1
