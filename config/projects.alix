@@ -52,8 +52,12 @@ nazar = {
   hg = "https://thewhitelion.kilnhg.com/Repo/Nazar/Group/Trunk"
 }
 
-xml = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/XML/Group/Trunk"
+partoe = {
+  hg = "https://thewhitelion.kilnhg.com/Repo/Partoe/Group/Partoe"
+}
+
+agama = {
+  hg = "https://thewhitelion.kilnhg.com/Repo/Agama/Group/Trunk"
 }
 
 sk = {
@@ -66,6 +70,10 @@ leander = {
 
 xi = {
   hg = "https://thewhitelion.kilnhg.com/Repo/Xi/Group/Trunk"
+}
+
+komnenos = {
+  hg = "https://thewhitelion.kilnhg.com/Repo/Komnenos/Group/Trunk"
 }
 
 aquarius = {
@@ -92,4 +100,9 @@ tagatha = {
 machete = {
   hg = "https://thewhitelion.kilnhg.com/Repo/Machete/Group/Trunk"
 }
+
+hadrian = {
+  hg = "https://thewhitelion.kilnhg.com/Repo/Hadrian/Group/Trunk"
+}
+
 
