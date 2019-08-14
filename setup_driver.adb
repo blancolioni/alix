@@ -4,6 +4,8 @@ with Ada.Environment_Variables;
 with Ada.Strings.Fixed;
 with Ada.Text_IO;
 
+with GNAT.OS_Lib;
+
 with Alix;
 with Alix.Git;
 with Alix.Processes;
@@ -129,7 +131,7 @@ procedure Setup_Driver is
       if Windows then
          return Home_Drive & Home_Path & "\alix";
       else
-         return Home_Path & ".alix";
+         return Home & "/.alix";
       end if;
    end Default_Install_Directory;
 
@@ -249,6 +251,10 @@ begin
         (Source_Name => Executable_Name ("bin/alix-driver"),
          Target_Name =>
            Ada.Directories.Compose
+             (Bin_Folder, Executable_Name ("alix")));
+
+      GNAT.OS_Lib.Set_Executable
+         (Ada.Directories.Compose
              (Bin_Folder, Executable_Name ("alix")));
 
       Ada.Text_IO.Put_Line
