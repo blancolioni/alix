@@ -1,113 +1,91 @@
 wlib = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/WLib/Group/Trunk"
+  git = https://github.com/blancolioni/wlib.git
   version = 1.0
 }
 
 gcs = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/GCS/Group/Trunk"
+  git = https://github.com/blancolioni/gcs.git
   version = 1.0
 }
 
 marlowe = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Marlowe/Group/Trunk"
-  version = 1.0
-}
-
-slim = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Slim/Group/Trunk"
+  git = https://github.com/blancolioni/marlowe.git
   version = 1.0
 }
 
 tropos = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Tropos/Group/Trunk"
+  git = https://github.com/blancolioni/tropos.git
   version = 1.0
 }
 
 agama = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Agama/Group/Trunk"
+  git = https://github.com/blancolioni/agama.git
   version = 1.0
 }
 
 alix = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Alix/Group/Trunk"
+  git = https://github.com/blancolioni/alix.git
   version = 0.1
 }
 
-conflict = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Conflict/Group/Trunk"
-}
-
-grendel = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Grendel/Group/Trunk"
-}
-
 kit = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Kit/Group/Trunk"
+  git = https://github.com/blancolioni/kit.git
 }
 
 syn = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Syn/Group/Trunk"
+  git = https://github.com/blancolioni/syn.git
 }
 
 memor = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Memor/Group/Trunk"
-}
-
-nazar = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Nazar/Group/Trunk"
+  git = https://github.com/blancolioni/memor.git
 }
 
 partoe = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Partoe/Group/Partoe"
+  git = https://github.com/blancolioni/partoe.git
 }
 
 agama = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Agama/Group/Trunk"
+  git = https://github.com/blancolioni/agama.git
 }
 
 sk = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/SK/Group/Trunk"
+  git = https://github.com/blancolioni/sk.git
 }
 
 leander = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Leander/Group/Trunk"
-}
-
-xi = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Xi/Group/Trunk"
+  git = https://github.com/blancolioni/leander.git
 }
 
 komnenos = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Komnenos/Group/Trunk"
+  git = https://github.com/blancolioni/komnenos.git
 }
 
 aquarius = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Aquarius/Group/Trunk"
+  git = https://github.com/blancolioni/aquarius.git
 }
 
 lith = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Lith/Group/Trunk"
+  git = https://github.com/blancolioni/lith.git
 }
 
 lui = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Lui/Group/Trunk"
-
+  git = https://github.com/blancolioni/lui.git
 }
 
 aqua = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Aqua/Group/Trunk"
+  git = https://github.com/blancolioni/aqua.git
 }
 
 tagatha = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Tagatha/Group/Trunk"
+  git = https://github.com/blancolioni/tagatha.git
 }
 
 machete = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Machete/Group/Trunk"
+  git = https://github.com/blancolioni/machete.git
 }
 
 hadrian = {
-  hg = "https://thewhitelion.kilnhg.com/Repo/Hadrian/Group/Trunk"
+  git = https://github.com/blancolioni/hadrian.git
 }
 
 

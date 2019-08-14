@@ -1,4 +1,6 @@
-with WL.Command_Line;
+with Ada.Command_Line;
+
+with WL.String_Maps;
 
 with Alix.Commands.Help;
 
@@ -8,19 +10,10 @@ with Alix.Commands.Update;
 
 package body Alix.Commands is
 
-   type Command_Flag is
-     (Skip_Source_Clone);
+   package Command_Maps is
+     new WL.String_Maps (Root_Alix_Command'Class);
 
-   Flag_Values : array (Command_Flag) of Boolean := (others => False);
-
-   type Flag_Handler is
-     new WL.Command_Line.Flag_Argument_Handler with
-      record
-         Flag : Command_Flag;
-      end record;
-
-   overriding procedure Handle_Clear (Handler : in out Flag_Handler);
-   overriding procedure Handle_Set (Handler : in out Flag_Handler);
+   Command_Map : Command_Maps.Map;
 
    -------------
    -- Execute --
@@ -28,26 +21,13 @@ package body Alix.Commands is
 
    procedure Execute is
    begin
-      WL.Command_Line.Process_Command_Line;
+      if Ada.Command_Line.Argument_Count = 0 then
+         Alix.Commands.Help.Handler.Execute
+           (Argument_Vectors.Empty_Vector);
+         return;
+      end if;
+
    end Execute;
-
-   ------------------
-   -- Handle_Clear --
-   ------------------
-
-   overriding procedure Handle_Clear (Handler : in out Flag_Handler) is
-   begin
-      Flag_Values (Handler.Flag) := False;
-   end Handle_Clear;
-
-   ----------------
-   -- Handle_Set --
-   ----------------
-
-   overriding procedure Handle_Set (Handler : in out Flag_Handler) is
-   begin
-      Flag_Values (Handler.Flag) := True;
-   end Handle_Set;
 
    ----------------
    -- Initialise --
@@ -55,21 +35,10 @@ package body Alix.Commands is
 
    procedure Initialise is
    begin
-      WL.Command_Line.Register
-        ("help", '?', Alix.Commands.Help.Help_Handler);
-
-      WL.Command_Line.Register
-        ("install", Alix.Commands.Install.Install_Handler);
-      WL.Command_Line.Register
-        ("configure", Alix.Commands.Configure.Configure_Handler);
-      WL.Command_Line.Register
-        ("update", Alix.Commands.Update.Update_Handler);
-
-      WL.Command_Line.Register
-        ("no-clone",
-         Flag_Handler'(WL.Command_Line.Flag_Argument_Handler
-           with Flag => Skip_Source_Clone));
-
+      Command_Map.Insert ("configure", Configure.Handler);
+      Command_Map.Insert ("help", Help.Handler);
+      Command_Map.Insert ("install", Install.Handler);
+      Command_Map.Insert ("update", Update.Handler);
    end Initialise;
 
    -----------------------
@@ -78,7 +47,7 @@ package body Alix.Commands is
 
    function Skip_Source_Clone return Boolean is
    begin
-      return Flag_Values (Skip_Source_Clone);
+      return False;
    end Skip_Source_Clone;
 
 end Alix.Commands;

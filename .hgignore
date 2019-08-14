@@ -1,6 +1,0 @@
-syntax: glob
-*.o
-*.ali
-*~
-b~*.ad[bs]
-build/bin/*

@@ -4,19 +4,23 @@ with Alix.Installer;
 
 package body Alix.Commands.Update is
 
-   type Update_Handler_Type is
-     new WL.Command_Line.Dispatch_Handler with null record;
+   type Update_Command is new Root_Alix_Command with null record;
 
-   overriding procedure Execute (Handler : Update_Handler_Type);
+   overriding procedure Execute
+     (Command   : Update_Command;
+      Arguments : Argument_Vectors.Vector);
 
    -------------
    -- Execute --
    -------------
 
-   overriding procedure Execute (Handler : Update_Handler_Type) is
-      pragma Unreferenced (Handler);
+   overriding procedure Execute
+     (Command   : Update_Command;
+      Arguments : Argument_Vectors.Vector)
+   is
+      pragma Unreferenced (Command);
    begin
-      if WL.Command_Line.Argument_Count /= 1 then
+      if Arguments.Last_Index /= 1 then
          Ada.Text_IO.Put_Line
            (Ada.Text_IO.Standard_Error,
             "Usage: install project-name");
@@ -24,24 +28,19 @@ package body Alix.Commands.Update is
       end if;
 
       declare
-         Project_Name : constant String :=
-                          WL.Command_Line.Argument (1);
+         Project_Name : constant String := Arguments.First_Element;
       begin
          Alix.Installer.Install (Project_Name);
       end;
    end Execute;
 
-   ---------------------
-   -- Update_Handler --
-   ---------------------
+   -------------
+   -- Handler --
+   -------------
 
-   function Update_Handler
-      return WL.Command_Line.Root_Argument_Handler'Class
-   is
+   function Handler return Root_Alix_Command'Class is
    begin
-      return Update : Update_Handler_Type do
-         null;
-      end return;
-   end Update_Handler;
+      return Update : Update_Command;
+   end Handler;
 
 end Alix.Commands.Update;

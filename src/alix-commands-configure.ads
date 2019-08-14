@@ -1,8 +1,5 @@
-with WL.Command_Line;
-
 private package Alix.Commands.Configure is
 
-   function Configure_Handler
-     return WL.Command_Line.Root_Argument_Handler'Class;
+   function Handler return Root_Alix_Command'Class;
 
 end Alix.Commands.Configure;

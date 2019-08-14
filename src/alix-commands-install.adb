@@ -5,19 +5,24 @@ with Alix.Versions;
 
 package body Alix.Commands.Install is
 
-   type Install_Handler_Type is
-     new WL.Command_Line.Dispatch_Handler with null record;
+   type Install_Command is
+     new Root_Alix_Command with null record;
 
-   overriding procedure Execute (Handler : Install_Handler_Type);
+   overriding procedure Execute
+     (Command   : Install_Command;
+      Arguments : Argument_Vectors.Vector);
 
    -------------
    -- Execute --
    -------------
 
-   overriding procedure Execute (Handler : Install_Handler_Type) is
-      pragma Unreferenced (Handler);
+   overriding procedure Execute
+     (Command   : Install_Command;
+      Arguments : Argument_Vectors.Vector)
+   is
+      pragma Unreferenced (Command);
    begin
-      if WL.Command_Line.Argument_Count /= 1 then
+      if Arguments.Last_Index /= 1 then
          Ada.Text_IO.Put_Line
            (Ada.Text_IO.Standard_Error,
             "Usage: install project-name");
@@ -26,13 +31,13 @@ package body Alix.Commands.Install is
 
       declare
          Project_And_Version : constant String :=
-                                 WL.Command_Line.Argument (1);
+           Arguments.First_Element;
          Project_Name        : constant String :=
-                                 Alix.Versions.Get_Project_Name
-                                   (Project_And_Version);
+           Alix.Versions.Get_Project_Name
+             (Project_And_Version);
          Project_Version     : constant Alix.Versions.Version_Number :=
-                                 Alix.Versions.Get_Project_Version
-                                   (Project_And_Version);
+           Alix.Versions.Get_Project_Version
+             (Project_And_Version);
       begin
          Alix.Installer.Install (Project_Name, Project_Version);
       end;
@@ -43,13 +48,9 @@ package body Alix.Commands.Install is
    -- Install_Handler --
    ---------------------
 
-   function Install_Handler
-      return WL.Command_Line.Root_Argument_Handler'Class
-   is
+   function Handler return Root_Alix_Command'Class is
    begin
-      return Install : Install_Handler_Type do
-         null;
-      end return;
-   end Install_Handler;
+      return Install : Install_Command;
+   end Handler;
 
 end Alix.Commands.Install;

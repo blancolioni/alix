@@ -1,47 +1,38 @@
+with Ada.Text_IO;
+
 package body Alix.Commands.Help is
 
-   type Help_Handler_Type is
-     new WL.Command_Line.Flag_Argument_Handler with
-     null record;
+   type Help_Command is new Root_Alix_Command with null record;
 
-   overriding procedure Handle_Set (Handler : in out Help_Handler_Type);
+   overriding procedure Execute
+     (Command   : Help_Command;
+      Arguments : Argument_Vectors.Vector);
 
-   overriding function Exit_After (Handler : Help_Handler_Type) return Boolean;
+     -------------
+   -- Execute --
+   -------------
 
-   ----------------
-   -- Exit_After --
-   ----------------
-
-   overriding function Exit_After
-     (Handler : Help_Handler_Type)
-      return Boolean
+   overriding procedure Execute
+     (Command   : Help_Command;
+      Arguments : Argument_Vectors.Vector)
    is
-      pragma Unreferenced (Handler);
+      pragma Unreferenced (Command);
+      pragma Unreferenced (Arguments);
+      use Ada.Text_IO;
    begin
-      return True;
-   end Exit_After;
-
-   ----------------
-   -- Handle_Set --
-   ----------------
-
-   overriding procedure Handle_Set (Handler : in out Help_Handler_Type) is
-      pragma Unreferenced (Handler);
-   begin
-      WL.Command_Line.Show_Usage;
-   end Handle_Set;
+      Put_Line (Standard_Error,
+                "Usage: alix configure");
+      Put_Line (Standard_Error,
+                "       alix install <project name>");
+   end Execute;
 
    ------------------
    -- Help_Handler --
    ------------------
 
-   function Help_Handler
-     return WL.Command_Line.Root_Argument_Handler'Class
-   is
+   function Handler return Root_Alix_Command'Class is
    begin
-      return H : Help_Handler_Type do
-         null;
-      end return;
-   end Help_Handler;
+      return Help : Help_Command;
+   end Handler;
 
 end Alix.Commands.Help;
