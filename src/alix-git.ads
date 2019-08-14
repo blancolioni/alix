@@ -5,4 +5,6 @@ package Alix.Git is
       Repository_Path : String;
       Branch_Name     : String := "");
 
+   procedure Pull;
+
 end Alix.Git;

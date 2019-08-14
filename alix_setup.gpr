@@ -6,7 +6,7 @@ project Alix_Setup is
    for Exec_Dir use "./bin";
 
    package Compiler is
-      for Switches ("ada") use ("-g", "-O2", "-gnatwa", "-gnatyABCM72OSabcdefhiklnoprstux");
+      for Switches ("ada") use ("-g", "-O2", "-gnatwa", "-gnatyABCM78OSabcefhiklnoprstux");
    end Compiler;
 
 end Alix_Setup;

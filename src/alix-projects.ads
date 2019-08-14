@@ -11,8 +11,8 @@ package Alix.Projects is
    --  If the project source is not already stored locally, fetch it from
    --  the server named in the Project.alix config file
    --  Return the full path to the project's source folder
-   --  The Project_Not_Found exception is raised if the project does not exist,
-   --  or the version template cannot be matched.
+   --  The Project_Not_Found exception is raised if the project does not
+   --  exist, or the version template cannot be matched.
 
    function Get_Matching_Version
      (Project_Name     : String;

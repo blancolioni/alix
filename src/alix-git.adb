@@ -21,4 +21,13 @@ package body Alix.Git is
          & Local_Path);
    end Clone;
 
+   ----------
+   -- Pull --
+   ----------
+
+   procedure Pull is
+   begin
+      Alix.Processes.Spawn ("git pull");
+   end Pull;
+
 end Alix.Git;

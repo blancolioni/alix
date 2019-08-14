@@ -6,8 +6,8 @@ with Tropos.Reader;
 
 with Alix.Commands;
 with Alix.Config;
+with Alix.Git;
 with Alix.Paths;
-with Alix.Processes;
 with Alix.Versions;
 
 package body Alix.Projects is
@@ -79,30 +79,17 @@ package body Alix.Projects is
               ("Updating existing source in " & Project_Path);
             Ada.Directories.Set_Directory
               (Project_Path);
-            Alix.Processes.Spawn
-              (Alix.Config.Get ("hg") & " pull");
-            Alix.Processes.Spawn
-              (Alix.Config.Get ("hg") & " update");
+            Alix.Git.Pull;
          else
             Ada.Text_IO.Put_Line
               ("Not updating version " & Project_Version);
          end if;
       else
          if not Alix.Commands.Skip_Source_Clone then
-
-            if Project_Version = "" then
-               Alix.Processes.Spawn
-                 (Alix.Config.Get ("hg") & " clone "
-                  & Repository_URL & " "
-                  & Project_Path);
-            else
-               Alix.Processes.Spawn
-                 (Alix.Config.Get ("hg") & " clone "
-                  & "-r " & Project_Version & " "
-                  & Repository_URL & " "
-                  & Project_Path);
-            end if;
-
+            Alix.Git.Clone
+              (Local_Path      => Project_Path,
+               Repository_Path => Repository_URL,
+               Branch_Name     => Project_Version);
          end if;
       end if;
 
@@ -142,9 +129,9 @@ package body Alix.Projects is
                             (Config,
                              Version_Template);
    begin
-      if Config.Contains ("hg") then
+      if Config.Contains ("git") then
          return Clone_Source (Config.Config_Name,
-                              Config.Get ("hg"),
+                              Config.Get ("git"),
                               Project_Version);
       elsif Config.Contains ("tgz") then
          return Copy_Source (Config.Config_Name,
@@ -152,8 +139,9 @@ package body Alix.Projects is
                              Project_Version);
       else
          raise Project_Not_Found
-           with "error in projects.alix file for project " & Project_Name
-             & ": no project location found";
+           with "error in projects.alix file for project "
+           & Project_Name
+           & ": no project location found";
       end if;
    end Fetch_Project;
 

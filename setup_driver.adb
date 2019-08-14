@@ -183,13 +183,14 @@ begin
       Bin_Folder    : constant String :=
         Get_Prompted_Text
           (Prompt => "bin folder",
-           Default => Alix_Folder & "/bin");
+           Default =>
+             Ada.Directories.Compose (Alix_Folder, "bin"));
       Build_Folder    : constant String :=
-        Alix_Folder & "/build";
+        Ada.Directories.Compose (Alix_Folder, "build");
       Config_Folder   : constant String :=
-        Alix_Folder & "/config";
+        Ada.Directories.Compose (Alix_Folder, "config");
       Alix_Config   : constant String :=
-        Config_Folder & "/alix";
+        Ada.Directories.Compose (Config_Folder, "alix");
    begin
       Ada.Text_IO.Put_Line ("installing to: " & Alix_Folder);
       if Ada.Directories.Exists ("dependencies") then
@@ -213,15 +214,25 @@ begin
 
       Create_Paths_Package (Alix_Folder & "/config/alix");
 
-      if Ada.Directories.Exists (Alix_Folder) then
-         Ada.Directories.Delete_Tree (Alix_Folder);
+      if not Ada.Directories.Exists (Alix_Folder) then
+         Ada.Directories.Create_Directory (Alix_Folder);
       end if;
 
-      Ada.Directories.Create_Directory (Alix_Folder);
-      Ada.Directories.Create_Directory (Config_Folder);
-      Ada.Directories.Create_Directory (Alix_Config);
-      Ada.Directories.Create_Directory (Bin_Folder);
-      Ada.Directories.Create_Directory (Build_Folder);
+      if not Ada.Directories.Exists (Config_Folder) then
+         Ada.Directories.Create_Directory (Config_Folder);
+      end if;
+
+      if not Ada.Directories.Exists (Alix_Config) then
+         Ada.Directories.Create_Directory (Alix_Config);
+      end if;
+
+      if not Ada.Directories.Exists (Bin_Folder) then
+         Ada.Directories.Create_Directory (Bin_Folder);
+      end if;
+
+      if not Ada.Directories.Exists (Build_Folder) then
+         Ada.Directories.Create_Directory (Build_Folder);
+      end if;
 
       Ada.Directories.Copy_File
         (Source_Name => "dependencies/alix-projects/projects.alix",
@@ -239,6 +250,14 @@ begin
          Target_Name =>
            Ada.Directories.Compose
              (Bin_Folder, Executable_Name ("alix")));
+
+      Ada.Text_IO.Put_Line
+        ("Setup complete");
+      Ada.Text_IO.Put_Line
+        ("Ensure that " & Bin_Folder & " is in your PATH");
+      Ada.Text_IO.Put_Line
+        ("Ensure that " & Alix_Folder & " is in GPR_PROJECT_PATH");
+
    end;
 
 end Setup_Driver;

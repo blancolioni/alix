@@ -27,6 +27,23 @@ package body Alix.Commands is
          return;
       end if;
 
+      declare
+         Command : constant String := Ada.Command_Line.Argument (1);
+         Arguments : Argument_Vectors.Vector;
+      begin
+
+         if Command_Map.Contains (Command) then
+            for I in 2 .. Ada.Command_Line.Argument_Count loop
+               Arguments.Append (Ada.Command_Line.Argument (I));
+            end loop;
+
+            Command_Map.Element (Command).Execute (Arguments);
+         else
+            Alix.Commands.Help.Handler.Execute
+              (Argument_Vectors.Empty_Vector);
+         end if;
+      end;
+
    end Execute;
 
    ----------------
