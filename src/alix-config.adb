@@ -95,12 +95,30 @@ package body Alix.Config is
       return Ada.Directories.Compose (Global_Build_Path, "obj");
    end Global_Object_Path;
 
+   ------------------------
+   -- Global_Source_Path --
+   ------------------------
+
    function Global_Source_Path return String is
    begin
       return Ada.Directories.Compose
         (Local_Config.Get ("install_path"),
          "source");
    end Global_Source_Path;
+
+   ---------------
+   -- Has_Value --
+   ---------------
+
+   function Has_Value
+     (Attribute_Name  : String;
+      Attribute_Value : String)
+      return Boolean
+   is
+   begin
+      return Local_Config.Child ("options")
+        .Get (Attribute_Name, "") = Attribute_Value;
+   end Has_Value;
 
    -----------------------
    -- Installation_Path --

@@ -41,4 +41,9 @@ package Alix.Config is
       Project_Version : String)
      return WL.Text.Text_Replacement;
 
+   function Has_Value
+     (Attribute_Name : String;
+      Attribute_Value : String)
+      return Boolean;
+
 end Alix.Config;

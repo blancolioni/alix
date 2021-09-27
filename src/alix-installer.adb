@@ -532,6 +532,57 @@ package body Alix.Installer is
       procedure Write_Single_Line_List (It : Tropos.Cursor);
       procedure Write_Project_With (It : Tropos.Cursor);
 
+      procedure Iterate_Config_File
+        (Field_Name : String;
+         Process    : not null access
+           procedure (It : Tropos.Cursor));
+
+      -------------------------
+      -- Iterate_Config_File --
+      -------------------------
+
+      procedure Iterate_Config_File
+        (Field_Name : String;
+         Process    : not null access
+           procedure (It : Tropos.Cursor))
+      is
+         procedure Process_Guarded_Config (It : Tropos.Cursor);
+
+         ----------------------------
+         -- Process_Guarded_Config --
+         ----------------------------
+
+         procedure Process_Guarded_Config (It : Tropos.Cursor) is
+
+            Success : Boolean := True;
+
+            procedure Check (Name  : String;
+                             Value : String);
+
+            -----------
+            -- Check --
+            -----------
+
+            procedure Check (Name  : String;
+                             Value : String)
+            is
+            begin
+               Success := Success
+                 and then Alix.Config.Has_Value (Name, Value);
+            end Check;
+
+         begin
+            Tropos.Element (It).Iterate_Attributes (Check'Access);
+            if Success then
+               Tropos.Element (It).Iterate (Field_Name, Process);
+            end if;
+         end Process_Guarded_Config;
+
+      begin
+         Project_Config.Iterate (Field_Name, Process);
+         Project_Config.Iterate ("when", Process_Guarded_Config'Access);
+      end Iterate_Config_File;
+
       ----------------
       -- Write_List --
       ----------------
@@ -617,7 +668,7 @@ package body Alix.Installer is
 
       Create (File, Out_File, Project_File_Path);
 
-      Project_Config.Iterate ("depend", Write_Project_With'Access);
+      Iterate_Config_File ("depend", Write_Project_With'Access);
 
       Put_Line (File,
                 "project "
@@ -627,7 +678,7 @@ package body Alix.Installer is
       Put_Line (File, "   for Source_Dirs use (");
       First_Item  := True;
       Path_Prefix := True;
-      Project_Config.Iterate ("source_dir", Write_List'Access);
+      Iterate_Config_File ("source_dir", Write_List'Access);
       Path_Prefix := False;
       Put_Line (File, ");");
       New_Line (File);
@@ -645,7 +696,7 @@ package body Alix.Installer is
          Put_Line (File,
                    "   for Main use (");
          First_Item := True;
-         Project_Config.Iterate ("main_unit", Write_List'Access);
+         Iterate_Config_File ("main_unit", Write_List'Access);
          Put_Line (File, ");");
       end if;
       New_Line (File);
@@ -680,7 +731,7 @@ package body Alix.Installer is
       Put (File,
                 "      for Default_Switches (""ada"") use (");
       First_Item := True;
-      Project_Config.Iterate ("linker_option",
+      Iterate_Config_File ("linker_option",
                               Write_Single_Line_List'Access);
       Put_Line (File, ");");
       Put_Line (File,
